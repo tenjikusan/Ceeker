@@ -1,0 +1,1 @@
+Ceeker 0.62 preview: the Windows installer is now 135.5 MB—59% smaller. Local search, OCR, previews & duplicate review stay included. Add offline AI text/photo similarity with the optional pack. Try it: https://github.com/tenjikusan/Ceeker/releases/tag/v0.62.0-preview.1

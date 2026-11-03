@@ -1,0 +1,42 @@
+[
+  {
+    "name": "clip\\merges.txt",
+    "sha256": "9FD691F7C8039210E0FCED15865466C65820D09B63988B0174BFE25DE299051A",
+    "bytes": 524619
+  },
+  {
+    "name": "clip\\README.md",
+    "sha256": "19C2EF35FA89966C7FA7AA30666B4E3AEEF4B075461626BE55E6037133CC6AA4",
+    "bytes": 1404
+  },
+  {
+    "name": "clip\\text_model_quantized.onnx",
+    "sha256": "73BAAB855D406190DA9FAA498CFEDF65F15CF309F4CC7385B7B032E6D08E5C3A",
+    "bytes": 64504507
+  },
+  {
+    "name": "clip\\vision_model_quantized.onnx",
+    "sha256": "583FD1110A514667812FEE7D684952AAF82A99B959760C8D7DCA7E0AB9839299",
+    "bytes": 89117001
+  },
+  {
+    "name": "clip\\vocab.json",
+    "sha256": "5047B556CE86CCAF6AA22B3FFCCFC52D391EA4ACCDAB9C2F2407DA5B742D4363",
+    "bytes": 862328
+  },
+  {
+    "name": "minilm\\MODEL-CARD.md",
+    "sha256": "7DFC82496EC33F906B5B0D6750C1E2397DA6530C74D1AE3568C55BC2739125E7",
+    "bytes": 10454
+  },
+  {
+    "name": "minilm\\model.onnx",
+    "sha256": "6FD5D72FE4589F189F8EBC006442DBB529BB7CE38F8082112682524616046452",
+    "bytes": 90405214
+  },
+  {
+    "name": "minilm\\vocab.txt",
+    "sha256": "07ECED375CEC144D27C900241F3E339478DEC958F92FDDBC551F295C992038A3",
+    "bytes": 231508
+  }
+]

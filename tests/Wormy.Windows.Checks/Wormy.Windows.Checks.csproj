@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0-windows10.0.19041.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><UseWindowsForms>true</UseWindowsForms></PropertyGroup>
+ <ItemGroup><PackageReference Include="Tesseract" Version="5.2.0"/><Compile Include="../../src/Wormy.App/NativeThumbnails.cs" Link="NativeThumbnails.cs"/><Compile Include="../../src/Wormy.App/FileTransfer.cs" Link="FileTransfer.cs"/><Compile Include="../../src/Wormy.App/ImageOcr.cs" Link="ImageOcr.cs"/><Content Include="../../src/Wormy.App/tessdata/eng.traineddata" Link="tessdata/eng.traineddata" CopyToOutputDirectory="PreserveNewest"/></ItemGroup>
+ <ItemGroup><Content Include="../../src/Wormy.App/tessdata/eng_best.traineddata" Link="tessdata/eng_best.traineddata" CopyToOutputDirectory="PreserveNewest"/><Compile Include="../../src/Wormy.App/PdfContent.cs" Link="PdfContent.cs"/><Compile Include="../../src/Wormy.App/RecycleBin.cs" Link="RecycleBin.cs" /><ProjectReference Include="../../src/Wormy.Core/Wormy.Core.csproj"/><ProjectReference Include="../../src/Wormy.Infrastructure/Wormy.Infrastructure.csproj"/></ItemGroup>
+ <ItemGroup><Compile Include="../../src/Wormy.App/LocalMedia.cs" Link="LocalMedia.cs"/></ItemGroup>
+ <ItemGroup><Compile Include="../../src/Wormy.App/PhotoSamples.cs" Link="PhotoSamples.cs"/></ItemGroup>
+ <ItemGroup><Compile Include="../../src/Wormy.App/InstalledApps.cs" Link="InstalledApps.cs"/></ItemGroup>
+ <ItemGroup><Compile Include="../../src/Wormy.App/AppUsage.cs" Link="AppUsage.cs"/></ItemGroup>
+<ItemGroup><Compile Include="../../src/Wormy.App/WindowsOcrReader.cs" Link="WindowsOcrReader.cs"/></ItemGroup><ItemGroup><PackageReference Include="OpenCvSharp4.Windows" Version="4.13.0.20260627"/><Compile Include="../../src/Wormy.App/GeometricPhotos.cs" Link="GeometricPhotos.cs"/></ItemGroup></Project>
+
+

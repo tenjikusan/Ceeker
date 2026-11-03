@@ -1,19 +1,5 @@
-# Upload this folder to GitHub
+# Contributing a Ceeker update
 
-Create an empty GitHub repository first. Install Git LFS, then use a terminal in this folder; the included .gitattributes routes ONNX and OCR model binaries through LFS. Upload the folder contents as the repository root. Do not use the browser drag-and-drop uploader for this complete model-bearing snapshot.
+Clone this repository with Git and Git LFS, then run git lfs pull before building. Model binaries belong in Git LFS; installers, checksums and promotional graphics intended for downloads belong in GitHub Releases. Do not commit user databases, credentials, signing keys, generated build directories or temporary fixtures.
 
-```powershell
-git init -b main
-git lfs install
-git add .
-git lfs ls-files
-git commit -m "Initial Ceeker source snapshot"
-git remote add origin https://github.com/YOUR-ACCOUNT/YOUR-REPOSITORY.git
-git push -u origin main
-```
-
-Replace the repository URL before running the final two commands. Git LFS storage/bandwidth limits depend on your account. For a clone, install Git LFS and run git lfs pull before building.
-
-The generated Windows installer belongs in GitHub Releases, not in the source commit. It is intentionally outside this folder. No GitHub upload, commit or publication was performed automatically. Choose a project license before describing the code as open source; this export retains existing third-party licenses and does not invent a license grant.
-
-Official guidance: https://docs.github.com/en/repositories/working-with-files/managing-large-files/configuring-git-large-file-storage
+Build and package instructions are in README.md. Use fresh release versions and preserve third-party notices. Standard and optional AI pack details are in docs/INSTALLER-EDITIONS.md. Treat the application as a preview until the pending native, upgrade and clean-machine checks in docs/VALIDATION-0.62.md are completed.

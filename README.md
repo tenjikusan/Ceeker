@@ -1,17 +1,22 @@
 # Ceeker
 
-Ceeker is a Windows desktop file library with offline search, document/image OCR, previews, exact duplicate review, folder-scoped scans and cleanup suggestions.
+A Windows file library with local search, document/image OCR, previews, duplicate review and cleanup suggestions.
 
-This source snapshot is version **0.60.0-preview.2**, prepared for GitHub. It is a preview release; native workflow, clean-machine, DPI and physical-touch validation remain pending. Signed updates and checkout are intentionally inactive. The project has not been assigned a new open-source license by this export; existing third-party notices are retained.
+## 0.62 preview: smaller download
 
-## Requirements
+The Standard installer is **135.5 MB**, down from **329.4 MB** (58.9% smaller). It retains normal search, indexed document text, OCR, previews, duplicates, saved searches, Quick Search, tray access and cleanup tools. Optional AI text/photo similarity is a separate **195.9 MB** pack; after installation it works offline. Automatic AI downloading is not configured.
 
-- Windows x64, Windows 10 build 19041 or later.
-- .NET 10 SDK and PowerShell 7 (`pwsh`).
-- Git and Git LFS for the included AI/OCR model binaries.
-- Inno Setup 6.7+ to compile an installer; pass its ISCC.exe path to BuildInstaller.ps1.
+[Download the preview](https://github.com/tenjikusan/Ceeker/releases/tag/v0.62.0-preview.1) · [Installer editions](docs/INSTALLER-EDITIONS.md) · [Validation and remaining checks](docs/VALIDATION-0.62.md)
 
-## Build and check
+![Ceeker 0.62 announcement](promo/Ceeker-0.62-announcement.png)
+
+## Desktop improvements
+
+Global Quick Search (Ctrl+Shift+Space), recent-download tray panel, Playful/Minimal styles, saved live searches, opt-in folder-scoped cleanup rules, Windows automation commands, preview navigation, multi-file drag and responsive layouts. [Details](docs/UI-0.61.md).
+
+## Build
+
+Requires Windows x64 (Windows 10 build 19041 or later), .NET 10 SDK, PowerShell 7, Git and Git LFS. Model binaries are stored using Git LFS.
 
 ```powershell
 git lfs install
@@ -20,19 +25,16 @@ dotnet build src/Wormy.App/Wormy.App.csproj -c Release -p:Platform=x64
 dotnet run --project tests/Wormy.Core.Checks -c Release
 ```
 
-The product name is Ceeker. Internal Wormy project names, data location and installation AppId remain for compatibility with existing users.
-
 ## Package
 
-Use a fresh version for each release:
+Use Inno Setup 6.7+ and a fresh release version. Pass -Compiler with your ISCC.exe path. The retained build-support/performance.json is a historical fixture benchmark, not a new measurement.
 
 ```powershell
-pwsh -NoProfile -File scripts/Package.ps1 -Version 0.61.0-preview.1
-pwsh -NoProfile -File scripts/BuildInstaller.ps1 -Version 0.61.0-preview.1 -Compiler "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+./scripts/Package.ps1 -Version 0.62.0-preview.1 -Edition Standard
+./scripts/BuildInstaller.ps1 -Version 0.62.0-preview.1 -Edition Standard -Compiler 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+./scripts/BuildAiPack.ps1 -Version 0.62.0-preview.1 -Compiler 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
 ```
 
-Packaging is self-contained and includes offline models. It uses the retained benchmark fixture report in build-support/performance.json; this is a historical report, not a new benchmark. Generated outputs appear in artifacts/ and are ignored by Git. Publish installers separately as GitHub Release assets.
+Use -Edition Full to bundle the AI models. Release installers and checksums belong in GitHub Releases; generated files, user libraries and credentials are excluded from source control.
 
-See [GitHub upload instructions](PUBLISH-GITHUB.md), [quick start](docs/QUICKSTART.md), [third-party notices](docs/THIRD-PARTY.md) and [current validation](docs/VALIDATION-0.60.md).
-
-Private credentials/signing keys, user libraries, test datasets, installers, temporary outputs and existing Git history are excluded from this folder.
+Internal Wormy namespaces, data paths and installation AppId remain for upgrade compatibility. This is a preview: clean-machine, installer upgrade and several native workflow checks remain pending. Signed online updates and checkout remain inactive. No new open-source license grant is made by this upload; [third-party licenses](docs/THIRD-PARTY.md) are retained.

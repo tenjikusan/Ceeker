@@ -1,0 +1,240 @@
+<Window x:Class="Wormy.App.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Grid x:Name="Shell" Background="{StaticResource PageBrush}" RequestedTheme="Light">
+  <Grid.Resources>
+
+   <Style x:Key="NavButton" TargetType="Button">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="14,7" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="CornerRadius" Value="10" />
+   </Style>
+   <DataTemplate x:Key="FileTile">
+    <Border  Width="{Binding TileWidth}" Padding="14" CornerRadius="6" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Margin="0,0,8,8">
+     <StackPanel Spacing="10">
+      <Border Height="{Binding PreviewHeight}" Background="{StaticResource PreviewBrush}" CornerRadius="6">
+       <Grid><FontIcon Glyph="{Binding Glyph}" FontSize="32" Foreground="#7D8288" Visibility="{Binding FallbackVisibility}"/><Image Source="{Binding Preview}" Stretch="{Binding PreviewStretch}" Loaded="ThumbnailLoaded" Unloaded="ThumbnailUnloaded" AutomationProperties.Name="{Binding PreviewDescription}" ToolTipService.ToolTip="{Binding PreviewDescription}"/></Grid>
+      </Border>
+      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Path}" />
+      <TextBlock Text="{Binding FolderSummary}" FontSize="11" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Path}"/>
+      <TextBlock Text="{Binding DisplaySize}" FontSize="12" Foreground="{StaticResource MutedBrush}" />
+      <ProgressBar Minimum="0" Maximum="100" Value="{Binding SizePercent}" Height="5" Visibility="{Binding SizeBarVisibility}" ToolTipService.ToolTip="{Binding SizeComparison}" AutomationProperties.Name="{Binding SizeComparison}"/>
+      <TextBlock Text="{Binding SourceSummary}" FontSize="11" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
+      <TextBlock Text="{Binding ReviewReason}" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource PurpleTextBrush}" Visibility="{Binding ReviewReasonVisibility}"/>
+
+     </StackPanel>
+    </Border>
+   </DataTemplate>
+   <DataTemplate x:Key="FileRow">
+    <Grid  Padding="10,8" ColumnSpacing="16">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition Width="*"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+     <Grid Width="32" Height="32"><FontIcon Glyph="{Binding Glyph}" Foreground="#7D8288" FontSize="22" Visibility="{Binding FallbackVisibility}"/><Image Source="{Binding Preview}" Stretch="Uniform" Loaded="ThumbnailLoaded" Unloaded="ThumbnailUnloaded" AutomationProperties.Name="{Binding PreviewDescription}"/></Grid>
+     <StackPanel Grid.Column="1" Spacing="3">
+      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+      <TextBlock Text="{Binding FolderSummary}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+      <TextBlock Text="{Binding SourceSummary}" Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+      <TextBlock Text="{Binding ReviewReason}" FontSize="11" TextWrapping="Wrap" Foreground="{StaticResource PurpleTextBrush}" Visibility="{Binding ReviewReasonVisibility}"/>
+
+     </StackPanel>
+     <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="6">
+      <TextBlock Text="{Binding DisplaySize}" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right"/>
+      <ProgressBar Minimum="0" Maximum="100" Value="{Binding SizePercent}" Height="5" Visibility="{Binding SizeBarVisibility}" ToolTipService.ToolTip="{Binding SizeComparison}" AutomationProperties.Name="{Binding SizeComparison}"/>
+     </StackPanel>
+    </Grid>
+   </DataTemplate>
+  </Grid.Resources>
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <Grid.ColumnDefinitions><ColumnDefinition x:Name="SidebarColumn" Width="260"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+  <Border x:Name="TopBar" Grid.Column="1" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="24,12">
+   <Grid x:Name="TopCommands" ColumnSpacing="12" RowSpacing="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Button x:Name="CompactNavigationButton" Visibility="Collapsed" Content="&#xE700;" FontFamily="Segoe Fluent Icons" AutomationProperties.Name="Navigation"/>
+    <Button x:Name="StyleToggleButton" Grid.Column="3" Content="Minimal" Click="ToggleVisualStyle" ToolTipService.ToolTip="Switch Playful / Minimal (Ctrl+Shift+T)"/>
+    <TextBox x:Name="SearchBox" Grid.Column="0" PlaceholderText="Search files, folders or text…" TextChanged="SearchChanged" CornerRadius="6" Padding="14,10" BorderBrush="{StaticResource LineBrush}" Background="{StaticResource PreviewBrush}" AutomationProperties.Name="Search files"/>
+    <TextBlock x:Name="HeaderLibrarySize" Grid.Column="1" Text="Library size  0 B" FontFamily="Consolas" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+    <Button x:Name="ConnectFolderButton" Grid.Column="2" Content="+  CONNECT FOLDER" FontFamily="Consolas" Click="ChooseFolder" Background="#FF5A1F" Foreground="White" BorderThickness="0" CornerRadius="6" Padding="18,10"/>
+<Button x:Name="SettingsButton" Grid.Column="4" Content="&#xE713;" FontFamily="Segoe Fluent Icons" AutomationProperties.Name="Settings" ToolTipService.ToolTip="Settings and modes"><Button.Flyout><Flyout x:Name="SettingsFlyout"><ScrollViewer MaxHeight="520" Width="340" HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled"><StackPanel x:Name="SettingsPanel" Spacing="10" Width="316"><TextBlock Text="Settings" FontSize="18" FontWeight="SemiBold"/></StackPanel></ScrollViewer></Flyout></Button.Flyout></Button>   </Grid>
+  </Border>
+  <Border x:Name="SidebarBorder" Grid.Row="0" Grid.RowSpan="2" Background="{StaticResource SidebarBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+   <Grid Padding="16,20" RowSpacing="16">
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Spacing="10" Margin="12,0"><Image Source="ms-appx:///Assets/ceeker-logo.png" Width="36" Height="36" Stretch="Uniform"/><TextBlock x:Name="BrandName" Text="Ceeker" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"/></StackPanel>
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"><StackPanel Spacing="4">
+     <TextBlock Text="LIBRARY" FontSize="10" CharacterSpacing="160" Foreground="{StaticResource MutedBrush}" Margin="16,0,0,12"/>
+     <Button x:Name="HomeButton" Style="{StaticResource NavButton}" Click="Navigate" Tag="Home" Background="{StaticResource SelectedBrush}"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xE80F;" FontSize="17"/><TextBlock Text="Home"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="All files"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xE8B7;" FontSize="17"/><TextBlock Text="All files"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Images"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xEB9F;" FontSize="17"/><TextBlock Text="Images"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Videos"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xE714;" FontSize="17"/><TextBlock Text="Videos"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Music"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xE8D6;" FontSize="17"/><TextBlock Text="Music"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Documents"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xE8A5;" FontSize="17"/><TextBlock Text="Documents"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Archives"><StackPanel Orientation="Horizontal" Spacing="14"><FontIcon Glyph="&#xF012;" FontSize="17"/><TextBlock Text="Archives"/></StackPanel></Button>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Duplicates" Content="Duplicates"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Similar photos" Content="Similar photos"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Storage" Content="Storage &amp; review"/>
+     <TextBlock Text="SMART VIEWS" FontSize="10" CharacterSpacing="120" Foreground="{StaticResource MutedBrush}" Margin="16,14,0,4"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Large files" Content="Large files" ToolTipService.ToolTip="Files above your review size threshold"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Screenshots" Content="Screenshots" ToolTipService.ToolTip="Images named Screenshot or Screen shot"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Downloaded from" Content="Downloaded from"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Downloads" Content="Downloads"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Old downloads" Content="Old downloads"/>
+     <Button Style="{StaticResource NavButton}" Click="Navigate" Tag="Old screenshots" Content="Old screenshots"/>
+     <Button Style="{StaticResource NavButton}" Click="InsightSettings" Content="Review settings…"/>
+     <Button Style="{StaticResource NavButton}" Click="ScanningSettings" Content="Scanning settings…"/>
+     <StackPanel x:Name="PinnedPanel" Spacing="4"/><StackPanel x:Name="SavedSearchPanel" Spacing="4"/>
+    </StackPanel></ScrollViewer>
+    <Border Grid.Row="2" BorderBrush="#D5D8DB" BorderThickness="0,1,0,0" Padding="0,14,0,0">
+     <StackPanel Spacing="8">
+      <TextBlock Text="Locations" FontSize="10" CharacterSpacing="120" Foreground="{StaticResource MutedBrush}"/>
+      <TextBlock x:Name="FolderLabel" Text="No folder connected" Foreground="{StaticResource MutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+      <ScrollViewer MaxHeight="220" HorizontalScrollBarVisibility="Disabled"><StackPanel x:Name="LocationLinks" Spacing="2"/></ScrollViewer>
+      <Grid ColumnSpacing="6"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+       <ComboBox x:Name="RootPicker" DisplayMemberPath="Name" HorizontalAlignment="Stretch" PlaceholderText="Choose a folder" AutomationProperties.Name="Connected folders" SelectionChanged="RootSelectionChanged"/>
+       <Button Grid.Column="1" Content="&#xE10C;" FontFamily="Segoe Fluent Icons" AutomationProperties.Name="Folder options" ToolTipService.ToolTip="Folder options" Padding="8"><Button.Flyout><MenuFlyout><MenuFlyoutItem Text="Connect a folder" Click="ChooseFolder"/><MenuFlyoutItem Text="Pin selected folder" Click="PinFolder"/><MenuFlyoutItem Text="Unpin selected folder" Click="UnpinFolder"/><MenuFlyoutItem Text="Disconnect selected folder" Click="DisconnectFolder"/></MenuFlyout></Button.Flyout></Button>
+      </Grid>
+      <Grid ColumnSpacing="6"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+       <Button Content="Refresh" Click="RefreshLibrary" HorizontalAlignment="Stretch" AutomationProperties.Name="Refresh library" ToolTipService.ToolTip="Check connected folders for changes"/>
+       <Button Grid.Column="1" Content="Index contents" Click="IndexContents" HorizontalAlignment="Stretch" FontSize="12" Padding="6,8" AutomationProperties.Name="Index file contents" ToolTipService.ToolTip="Save document text and English OCR for content search"/>
+      </Grid>
+      <CheckBox x:Name="AutomaticUpdates" Content="Auto-update folders" IsChecked="True" Checked="AutomaticUpdatesChanged" Unchecked="AutomaticUpdatesChanged" FontSize="12"/>
+     </StackPanel>
+    </Border>
+    <Border Grid.Row="3" Padding="0,4">
+     
+     <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE72E;" FontSize="12" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="Only on your computer" Foreground="{StaticResource MutedBrush}" FontSize="11"/></StackPanel>
+    </Border>
+   </Grid>
+  </Border>
+  <Grid x:Name="MainContent" Grid.Row="1" Grid.Column="1" Padding="28,20" RowSpacing="20">
+   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <Grid x:Name="BrowseCommands" ColumnSpacing="14" RowSpacing="8">
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Button Grid.Row="1" Content="Search options" HorizontalAlignment="Left" CornerRadius="6" ToolTipService.ToolTip="Searches names, folders, sources, tags and indexed text by default"><Button.Flyout><Flyout><StackPanel Width="280" Spacing="12"><TextBlock Text="Search options" FontWeight="SemiBold"/><CheckBox x:Name="SearchContents" Content="Include indexed file contents" IsThreeState="False" IsChecked="True" FontSize="14" Checked="ContentScopeChanged" Unchecked="ContentScopeChanged"/><CheckBox x:Name="SearchCurrentView" Content="Limit to current folder or category" IsThreeState="False" FontSize="14" Checked="SearchViewChanged" Unchecked="SearchViewChanged"/></StackPanel></Flyout></Button.Flyout></Button>
+    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+     <Button x:Name="BackButton" Content="&#xE72B;" FontFamily="Segoe Fluent Icons" IsEnabled="False" Click="GoBack" AutomationProperties.Name="Back" ToolTipService.ToolTip="Back (Alt+Left)"/>
+     <Button x:Name="ForwardButton" Content="&#xE72A;" FontFamily="Segoe Fluent Icons" IsEnabled="False" Click="GoForward" AutomationProperties.Name="Forward" ToolTipService.ToolTip="Forward (Alt+Right)"/>
+    </StackPanel>
+   </Grid>
+   <ScrollViewer x:Name="BrowseScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Padding="0,0,20,0">
+    <StackPanel Spacing="18" Margin="0,0,20,0">
+     <Grid ColumnSpacing="16"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel Spacing="8"><TextBlock x:Name="PageTitle" Text="Your files. In focus." FontFamily="Segoe UI" FontSize="28" FontWeight="Normal" Foreground="{StaticResource TextBrush}" TextWrapping="Wrap"/><TextBlock x:Name="PageSubtitle" Text="Your connected library, indexed locally." FontFamily="Segoe UI" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap"/></StackPanel><Button Grid.Column="1" Content="Refresh" Click="RefreshLibrary" VerticalAlignment="Top" Padding="14,8"/></Grid>
+     <StackPanel x:Name="InterpretationPanel" Spacing="10" Visibility="Collapsed">
+      <Grid><TextBlock Text="Understood as" FontWeight="SemiBold" Foreground="{StaticResource PurpleTextBrush}"/><StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"><Button Content="Save search" Click="SaveCurrentSearch"/><Button Content="Clear search" Click="ClearSearch" CornerRadius="6"/></StackPanel></Grid>
+      <StackPanel x:Name="FilterChips" Spacing="6"/>
+      <TextBlock x:Name="QueryWarning" Foreground="{StaticResource WarningBrush}" TextWrapping="Wrap"/>
+     </StackPanel>
+     <Border x:Name="WelcomePanel" Background="{StaticResource TintBrush}" CornerRadius="6" Padding="26">
+      <StackPanel Spacing="12"><FontIcon Glyph="&#xE8B7;" FontSize="32" Foreground="#FF5A1F" HorizontalAlignment="Left"/><TextBlock Text="Give your files a home" FontSize="22" FontWeight="SemiBold"/><TextBlock Text="Connect a folder to see your library take shape. Ceeker only scans the folders you choose." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" MaxWidth="520" HorizontalAlignment="Left"/><Button Content="Choose your first folder" Click="ChooseFolder" Margin="0,8,0,0" Background="#FF5A1F" Foreground="White" CornerRadius="6" BorderThickness="0" Padding="16,10"/></StackPanel>
+     </Border>
+     <StackPanel x:Name="LibraryPanel" Spacing="14" Background="{StaticResource PageBrush}">
+      <Grid><TextBlock Text="Library" FontSize="19" FontWeight="SemiBold"/><TextBlock x:Name="LibrarySummary" Text="Waiting for your first folder" FontSize="12" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"/></Grid>
+      <GridView x:Name="CategoryGrid" SelectionMode="None" IsItemClickEnabled="True" ItemClick="CategoryClicked">
+       <GridView.ItemTemplate><DataTemplate>
+        <Border Width="180" Margin="0,0,8,12" Padding="4,8" CornerRadius="6" Background="Transparent">
+         <StackPanel Spacing="5">
+          <Grid Width="180" Height="180" IsHitTestVisible="False" AutomationProperties.AccessibilityView="Raw">
+           <Image Source="{Binding Artwork}" Stretch="Uniform" Visibility="{Binding ArtworkVisibility}"/>
+           <FontIcon Glyph="{Binding Glyph}" Visibility="{Binding SymbolVisibility}" FontSize="{Binding SymbolSize}" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="{Binding SymbolHorizontal}" VerticalAlignment="{Binding SymbolVertical}" Margin="{Binding SymbolMargin}"/>
+          </Grid>
+          <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+          <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center"/>
+         </StackPanel>
+        </Border>
+       </DataTemplate></GridView.ItemTemplate>
+      </GridView>
+     </StackPanel>
+     <Border x:Name="InsightsPanel" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="6" Padding="20" Visibility="Collapsed">
+      <StackPanel Spacing="14">
+       <StackPanel x:Name="StorageSection" Spacing="12">
+       <TextBlock Text="Storage in your library" FontSize="19" FontWeight="SemiBold"/>
+       <TextBlock x:Name="StorageTotal" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+       <StackPanel x:Name="StorageRows" Spacing="12"/>
+       </StackPanel>
+       <TextBlock Text="Clean Up" FontSize="17" FontWeight="SemiBold" Margin="0,8,0,0"/>
+       <TextBlock Text="Suggestions use file size and last modification. Review files individually before deciding what to keep." FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+       <VariableSizedWrapGrid x:Name="SuggestionRows" Orientation="Horizontal" MaximumRowsOrColumns="4" ItemWidth="235" ItemHeight="170"/>
+       <TextBlock x:Name="CleanupTotals" TextWrapping="Wrap" FontWeight="SemiBold"/>
+       <Button Content="Review all suggestions" Click="OpenCleanupReview" HorizontalAlignment="Left"/>
+       <Button Content="Review settings…" Click="InsightSettings" HorizontalAlignment="Left"/>
+      </StackPanel>
+     </Border>
+     <Border x:Name="SourcesPanel" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="6" Padding="20" Visibility="Collapsed">
+      <StackPanel Spacing="12"><TextBlock Text="Downloaded From" FontSize="19" FontWeight="SemiBold"/><TextBlock x:Name="SourceTotals" FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/><VariableSizedWrapGrid x:Name="SourceRows" Orientation="Horizontal" MaximumRowsOrColumns="4" ItemWidth="235" ItemHeight="170"/></StackPanel>
+     </Border>
+     <StackPanel x:Name="FileSection" Spacing="12">
+      <Grid ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel Spacing="4"><TextBlock x:Name="FilesTitle" Text="Recent files" FontSize="19" FontWeight="SemiBold"/><TextBlock x:Name="ResultCount" Text="Your files will appear here" FontSize="12" Foreground="{StaticResource MutedBrush}"/></StackPanel><ToggleButton x:Name="GridViewButton" Grid.Column="1" Content="Grid" Click="ShowGrid" IsChecked="True" CornerRadius="6"/><ToggleButton x:Name="ListViewButton" Grid.Column="2" Content="List" Click="ShowList" CornerRadius="6"/></Grid>
+      <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="210" ItemHeight="48" MaximumRowsOrColumns="4">
+       <ComboBox x:Name="SortPicker" Width="195" Height="40" VerticalAlignment="Top" Margin="0" SelectedIndex="0" SelectionChanged="SortChanged" AutomationProperties.Name="Sort files"><ComboBoxItem Content="Newest first"/><ComboBoxItem Content="Oldest first"/><ComboBoxItem Content="Name A–Z"/><ComboBoxItem Content="Name Z–A"/><ComboBoxItem Content="Largest first"/><ComboBoxItem Content="Smallest first"/><ComboBoxItem Content="Kind A–Z"/><ComboBoxItem Content="Kind Z–A"/></ComboBox>
+       <Button x:Name="ThumbnailControls" Content="Thumbnail size" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Margin="0" Width="195" ToolTipService.ToolTip="Adjust grid preview size"><Button.Flyout><Flyout><StackPanel Width="240" Spacing="8"><TextBlock Text="Thumbnail size" FontWeight="SemiBold"/><Slider x:Name="ThumbnailSize" Width="240" Minimum="160" Maximum="280" StepFrequency="20" Value="180" ValueChanged="ThumbnailSizeChanged" AutomationProperties.Name="Thumbnail size"/></StackPanel></Flyout></Button.Flyout></Button>
+      <ComboBox x:Name="SourcePicker" Height="40" VerticalAlignment="Top" Margin="0" MinWidth="195" MaxWidth="195" HorizontalAlignment="Left" AutomationProperties.Name="Filter by download source" SelectionChanged="SourceChanged" ToolTipService.ToolTip="Source saved in Windows download metadata; missing sources remain unknown"/>
+      </VariableSizedWrapGrid>
+      <TextBlock Text="Click to select · Ctrl/Shift for multiple files · Double-click to preview · Drag to copy" FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+      <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="210" ItemHeight="48" MaximumRowsOrColumns="4"><Button Content="Select all shown" Click="SelectAllShown" HorizontalAlignment="Left" Width="195" Height="40" VerticalAlignment="Top" Margin="0"/>
+      <Button x:Name="ShowMoreFilesButton" Content="Show more files" Visibility="Collapsed" Click="ShowMoreFiles" HorizontalAlignment="Left" Width="195" Height="40" VerticalAlignment="Top" Margin="0"/></VariableSizedWrapGrid>
+      <Border x:Name="SelectionBar" Visibility="Collapsed" Background="{StaticResource TintBrush}" CornerRadius="6" Padding="12">
+       <StackPanel Spacing="8">
+        <Grid><TextBlock x:Name="SelectionSummary" VerticalAlignment="Center"/><Button Content="Clear selection" Click="ClearSelection" HorizontalAlignment="Right"/></Grid>
+        <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="205" ItemHeight="48" MaximumRowsOrColumns="4"><Button Content="Preview selection" Click="PreviewSelection"/><Button Content="Copy paths" Click="CopySelectedPaths"/><Button Content="Open selected" Click="OpenSelectedFiles" ToolTipService.ToolTip="Open up to 10 selected files in their default applications."/><Button Content="Show in Explorer" Click="RevealSelectedFiles" ToolTipService.ToolTip="Select up to 100 files in up to 10 folders."/><Button x:Name="BatchOcrButton" Content="Copy image text (English)" Click="CopySelectedImageText"/></VariableSizedWrapGrid>
+        <Button Content="Edit tags for selected file" Click="EditSelectedTags"/>
+        <Button x:Name="RecycleSelectedButton" Content="Review for Recycle Bin…" Click="RecycleSelected" HorizontalAlignment="Left" ToolTipService.ToolTip="Select up to 100 files. Review full paths before moving them to Recycle Bin."/>
+       </StackPanel>
+      </Border>
+      <GridView x:Name="FileGrid" ItemTemplate="{StaticResource FileTile}" SelectionMode="Extended" SelectionChanged="FilesSelected" DoubleTapped="FileDoubleTapped" CanDragItems="True" CanReorderItems="False" DragItemsStarting="DragFiles" ContextRequested="FileContextRequested"><GridView.KeyboardAccelerators><KeyboardAccelerator Key="Space" Invoked="PreviewSelected"/><KeyboardAccelerator Key="Enter" Invoked="PreviewSelected"/></GridView.KeyboardAccelerators></GridView>
+      <ListView x:Name="FileList" ItemTemplate="{StaticResource FileRow}" SelectionMode="Extended" SelectionChanged="FilesSelected" DoubleTapped="FileDoubleTapped" CanDragItems="True" CanReorderItems="False" DragItemsStarting="DragFiles" ContextRequested="FileContextRequested" Visibility="Collapsed"><ListView.KeyboardAccelerators><KeyboardAccelerator Key="Space" Invoked="PreviewSelected"/><KeyboardAccelerator Key="Enter" Invoked="PreviewSelected"/></ListView.KeyboardAccelerators></ListView>
+      <Border x:Name="EmptyPanel" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="6" Padding="24"><StackPanel Spacing="6"><TextBlock x:Name="EmptyTitle" Text="A fresh start" FontSize="16" FontWeight="SemiBold"/><TextBlock x:Name="EmptyDescription" Text="Connect a folder above to browse your real files." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/></StackPanel></Border>
+     </StackPanel>
+    </StackPanel>
+   </ScrollViewer>
+   <ScrollViewer x:Name="SimilarScroll" Grid.Row="1" Visibility="Collapsed" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Spacing="16">
+     <TextBlock Text="Similar photos" FontSize="30" FontWeight="SemiBold"/>
+     <TextBlock Text="Find visually similar candidates in your connected library. Matches can be wrong; review both originals before deciding what to keep." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"/>
+     <Button x:Name="SimilarScanButton" Content="Find similar photos" Click="ScanSimilarPhotos" HorizontalAlignment="Left" Background="#FF5A1F" Foreground="White" CornerRadius="6" Padding="18,12"/>
+     <TextBlock x:Name="SimilarSummary" Text="Ready to compare images locally. No files are selected for recycling." TextWrapping="Wrap"/>
+     <StackPanel x:Name="SimilarPairsPanel" Spacing="16"/>
+    </StackPanel>
+   </ScrollViewer>
+   <ScrollViewer x:Name="DuplicateScroll" Grid.Row="1" Visibility="Collapsed" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Spacing="20">
+     <TextBlock Text="A lighter library" FontSize="30" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}"/>
+     <TextBlock Text="Compare exact file contents across your connected folders." Foreground="{StaticResource MutedBrush}"/>
+          <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="220" ItemHeight="56" MaximumRowsOrColumns="4">
+      <Button x:Name="DuplicateScanButton" Content="Scan" Click="ScanDuplicates" Background="#FF5A1F" Foreground="White" Width="205" Height="44" Margin="0" VerticalAlignment="Top"/>
+      <Button x:Name="DuplicateFoldersButton" Content="Choose folders…" Click="ChooseDuplicateFolders" Width="205" Height="44" Margin="0" VerticalAlignment="Top"/>
+      <Button x:Name="DuplicateDisconnectButton" Content="Disconnect folder…" Click="DisconnectDuplicateFolder" Width="205" Height="44" Margin="0" VerticalAlignment="Top"/>
+      <Button x:Name="CleanupButton" Content="Review selected copies…" Click="ReviewCleanup" IsEnabled="False" Width="205" Height="44" Margin="0" VerticalAlignment="Top"/>
+     </VariableSizedWrapGrid>
+     <TextBlock x:Name="DuplicateScopeText" Text="Scan scope: All connected folders" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"/>
+     <ProgressBar x:Name="DuplicateProgressBar" Visibility="Collapsed"/>
+     <Border Background="{StaticResource TintBrush}" CornerRadius="6" Padding="20"><TextBlock x:Name="DuplicateSummary" Text="Ready to compare your library. Files remain untouched." TextWrapping="Wrap" Foreground="{StaticResource PurpleTextBrush}"/></Border>
+     <TextBlock Text="Choose a preferred copy, then select extra copies for the Recycle Bin. Choices reset on the next scan. Recycling does not immediately free disk space." TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+     <StackPanel x:Name="DuplicateGroupsPanel" Spacing="16"/>
+    </StackPanel>
+   </ScrollViewer>
+   <Grid x:Name="BottomDashboard" Grid.Row="2" ColumnSpacing="12" Visibility="Collapsed">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="14">
+     <StackPanel Spacing="8"><TextBlock Text="STORAGE" FontSize="11" Foreground="{StaticResource MutedBrush}"/><TextBlock x:Name="DashboardStorage" Text="0 B" FontSize="25"/><TextBlock Text="Indexed library · logical file sizes" FontSize="10" Foreground="{StaticResource MutedBrush}"/><TextBlock x:Name="DashboardDriveDetails" FontSize="10" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/><Grid x:Name="DashboardStorageBar" Height="8"/><TextBlock x:Name="DashboardStorageDetails" FontSize="11" TextWrapping="Wrap"/><Button Content="View storage" Click="DashboardStorageClicked" HorizontalAlignment="Left"/></StackPanel>
+    </Border>
+    <Border  Grid.Column="1" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="14">
+     <StackPanel Spacing="8"><TextBlock Text="CLEANUP REVIEW" FontSize="11" Foreground="{StaticResource MutedBrush}"/><Grid ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><StackPanel><Button x:Name="DashboardDuplicates" Content="—" FontSize="23" Click="DashboardDuplicatesClicked"/><TextBlock Text="DUPLICATE&#x0a;GROUPS" FontSize="10"/></StackPanel><StackPanel Grid.Column="1"><Button x:Name="DashboardInstallers" Content="0" FontSize="23" Click="DashboardInstallersClicked"/><TextBlock Text="OLD&#x0a;INSTALLERS" FontSize="10"/></StackPanel><StackPanel Grid.Column="2"><Button x:Name="DashboardVideos" Content="0" FontSize="23" Click="DashboardVideosClicked"/><TextBlock Text="OLD&#x0a;VIDEOS" FontSize="10"/></StackPanel></Grid><TextBlock x:Name="DashboardCleanupBytes" FontSize="11" TextWrapping="Wrap"/><Button Content="Review files" Click="OpenCleanupReview" BorderBrush="#FF5A1F" Foreground="{StaticResource PurpleTextBrush}" HorizontalAlignment="Stretch"/></StackPanel>
+    </Border>
+    <Border Grid.Column="2" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="14"><StackPanel Spacing="8"><TextBlock Text="INDEX ACTIVITY" FontSize="11" Foreground="{StaticResource MutedBrush}"/><TextBlock x:Name="DashboardActivity" Text="No activity this session" FontSize="11" TextWrapping="Wrap"/><Button Content="Refresh library" Click="RefreshLibrary" HorizontalAlignment="Left"/></StackPanel></Border>
+   </Grid>
+   <Grid Grid.Row="3" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="Status" Text="Ready when you are" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" MaxHeight="54" VerticalAlignment="Center"/><Button x:Name="CancelButton" Grid.Column="1" Content="Cancel scan" Click="CancelScan" Visibility="Collapsed" CornerRadius="6"/></Grid>
+  </Grid>
+ </Grid>
+</Window>
+
+
+
+
+
+
+
+
+
+

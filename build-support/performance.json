@@ -1,0 +1,16 @@
+{
+  "testedUtc": "2026-10-10T14:52:32.5726639Z",
+  "fileCount": 10000,
+  "generatedFileBytes": 250000,
+  "runtime": "10.0.12",
+  "measurements": {
+    "scanMs": 821.7383,
+    "indexWriteMs": 666.6748,
+    "restartLoadMs": 59.7166,
+    "searchMedianMs": 6.9435,
+    "searchMaxMs": 17.1892,
+    "duplicateScanMs": 1354.3056,
+    "peakWorkingSetMB": 74.907648
+  },
+  "scope": "Backend timings on generated small text files. Excludes UI rendering, search debounce, and cold-drive startup. No real user library tested."
+}
